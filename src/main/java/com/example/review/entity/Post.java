@@ -1,5 +1,6 @@
 package com.example.review.entity;
 
+import com.example.review.dto.PostRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,4 +22,13 @@ public class Post extends Timestamped {
     @ManyToOne
     @JoinColumn(name = "user_id")
     User user;
+
+    public Post(PostRequestDto postRequestDto) {
+        this.title = postRequestDto.getTitle();
+        this.content = postRequestDto.getContent();
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
