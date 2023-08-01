@@ -6,10 +6,7 @@ import com.example.review.dto.PostResponseDto;
 import com.example.review.security.UserDetailsImpl;
 import com.example.review.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,6 +24,11 @@ public class PostController {
     @PostMapping("/posts")
     PostResponseDto createPost(UserDetailsImpl userDetails, PostRequestDto postRequestDto) {
         return postService.createPost(userDetails.getUser(), postRequestDto);
+    }
+
+    @PutMapping("/posts/{id}/update")
+    PostResponseDto updatePost(UserDetailsImpl userDetails, Long id, PostRequestDto postRequestDto) {
+        return postService.updatePost(userDetails.getUser(), id, postRequestDto);
     }
 
 }

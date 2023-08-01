@@ -8,6 +8,7 @@ import com.example.review.entity.User;
 import com.example.review.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,5 +29,25 @@ public class PostService {
         post.setUser(user);
         postRepository.save(post);
         return new PostResponseDto(post);
+    }
+
+    @Transactional
+    public PostResponseDto updatePost(User user, Long id, PostRequestDto postRequestDto) {
+        Post post = findPost(id);
+        // 작성자 확인
+        if(!post.getUser().equals(user)) {
+            throw new IllegalArgumentException("게시글 작성자만 수정할 수 있습니다.");
+        }
+
+        post.setTitle(postRequestDto.getTitle());
+        post.setContent(postRequestDto.getContent());
+
+        return new PostResponseDto(post);
+    }
+
+    public Post findPost(long id) {
+        return postRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("게시글이 존재하지 않습니다.")
+        );
     }
 }
