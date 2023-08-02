@@ -3,7 +3,9 @@ package com.example.review.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -12,6 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
@@ -46,6 +51,16 @@ public class JwtUtil {
         return null;
     }
 
+
+    // JWT 토큰 substring
+    public String substringToken(String tokenValue) {
+        if (StringUtils.hasText(tokenValue) && tokenValue.startsWith(BEARER_PREFIX)) {
+            return tokenValue.substring(7);
+        }
+        logger.error("Not Found Token");
+        throw new NullPointerException("Not Found Token");
+    }
+
     public String createToken(String username) {
         Date date = new Date();
         long TOKEN_TIME = 60 * 60 * 1000L;
@@ -57,6 +72,17 @@ public class JwtUtil {
                         .setIssuedAt(date)
                         .signWith(key, signatureAlgorithm)
                         .compact();
+    }
+
+    // JWT Cookie 에 저장
+    public void addJwtToCookie(String token, HttpServletResponse res) {
+        token = URLEncoder.encode(token, StandardCharsets.UTF_8).replaceAll("\\+", "%20"); // Cookie Value 에는 공백이 불가능해서 encoding 진행
+
+        Cookie cookie = new Cookie(AUTHORIZATION_HEADER, token); // Name-Value
+        cookie.setPath("/");
+
+        // Response 객체에 Cookie 추가
+        res.addCookie(cookie);
     }
 
     public boolean validateToken(String token) {
@@ -76,6 +102,18 @@ public class JwtUtil {
         return false;
     }
 
+    // HttpServletRequest 에서 Cookie Value : JWT 가져오기
+    public String getTokenFromRequest(HttpServletRequest req) {
+        Cookie[] cookies = req.getCookies();
+        if(cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
+                    return URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8); // Encode 되어 넘어간 Value 다시 Decode
+                }
+            }
+        }
+        return null;
+    }
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }

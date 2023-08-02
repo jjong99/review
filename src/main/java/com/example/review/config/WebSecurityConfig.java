@@ -1,5 +1,6 @@
 package com.example.review.config;
 
+import com.example.review.jwt.JwtAuthenticationFilter;
 import com.example.review.jwt.JwtAuthorizationFilter;
 import com.example.review.jwt.JwtUtil;
 import com.example.review.security.UserDetailsServiceImpl;
@@ -22,8 +23,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
+
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
+    private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -41,6 +44,15 @@ public class WebSecurityConfig {
         return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
     }
 
+    // Cookie 에서 로그인정보 추가
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
+        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
+        return filter;
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf((csrf) -> csrf.disable());
 
@@ -57,6 +69,7 @@ public class WebSecurityConfig {
         );
 
         http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

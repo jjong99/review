@@ -3,14 +3,16 @@ package com.example.review.service;
 import com.example.review.dto.AuthRequestDto;
 import com.example.review.entity.User;
 import com.example.review.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-    UserRepository userRepository;
-    PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     public void signup(AuthRequestDto authRequestDto) {
         String username = authRequestDto.getUsername();
         String password = passwordEncoder.encode(authRequestDto.getPassword());

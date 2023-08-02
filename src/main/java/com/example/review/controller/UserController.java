@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class UserController {
 
-    JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-    UserService userService;
+    private final UserService userService;
 
     @PostMapping("/signup")
     void signup(@RequestBody AuthRequestDto authRequestDto) {
@@ -27,7 +27,8 @@ public class UserController {
     @PostMapping("/login")
     void login(@RequestBody AuthRequestDto authRequestDto, HttpServletResponse response) {
         userService.login(authRequestDto);
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(authRequestDto.getUsername()));
+        String token = jwtUtil.createToken(authRequestDto.getUsername());
+        jwtUtil.addJwtToCookie(token, response);
     }
 
 
