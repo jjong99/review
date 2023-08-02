@@ -45,9 +45,22 @@ public class PostService {
         return new PostResponseDto(post);
     }
 
+    // 게시글 삭제
+    @Transactional
+    public void deletePost(User user, Long id) {
+        Post post = findPost(id);
+        if(!user.equals(post.getUser())) {
+            throw new IllegalArgumentException("게시글 작성자만 삭제할 수 있습니다.");
+        }
+
+        postRepository.delete(post);
+    }
+
     public Post findPost(long id) {
         return postRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("게시글이 존재하지 않습니다.")
         );
     }
+
+
 }

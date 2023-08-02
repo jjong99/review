@@ -6,6 +6,7 @@ import com.example.review.dto.PostResponseDto;
 import com.example.review.security.UserDetailsImpl;
 import com.example.review.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,13 +23,18 @@ public class PostController {
     }
 
     @PostMapping("/posts")
-    PostResponseDto createPost(UserDetailsImpl userDetails, PostRequestDto postRequestDto) {
+    PostResponseDto createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, PostRequestDto postRequestDto) {
         return postService.createPost(userDetails.getUser(), postRequestDto);
     }
 
-    @PutMapping("/posts/{id}/update")
-    PostResponseDto updatePost(UserDetailsImpl userDetails, Long id, PostRequestDto postRequestDto) {
+    @PutMapping("/posts/{id}")
+    PostResponseDto updatePost(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id, PostRequestDto postRequestDto) {
         return postService.updatePost(userDetails.getUser(), id, postRequestDto);
+    }
+
+    @DeleteMapping("/posts/{id}")
+    void deletePost(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id) {
+        postService.deletePost(userDetails.getUser(), id);
     }
 
 }
