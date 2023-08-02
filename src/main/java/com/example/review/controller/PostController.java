@@ -22,6 +22,12 @@ public class PostController {
         return postService.getPostList();
     }
 
+    //게시글 단건 조회
+    @GetMapping("/posts/{id}")
+    PostResponseDto getPost(@PathVariable Long id) {
+        return postService.getPost(id);
+    }
+
     @PostMapping("/posts")
     PostResponseDto createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, PostRequestDto postRequestDto) {
         return postService.createPost(userDetails.getUser(), postRequestDto);

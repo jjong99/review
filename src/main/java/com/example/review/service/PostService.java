@@ -9,6 +9,7 @@ import com.example.review.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +24,12 @@ public class PostService {
         return postRepository.findAllByOrderByCreatedAtDesc().stream().map(PostListResponseDto::new).collect(Collectors.toList());
     }
 
+    // 게시글 단건 조회
+    public PostResponseDto getPost(Long id) {
+        Post post = findPost(id);
+        return new PostResponseDto(post);
+    }
+
     // 게시글 작성
     public PostResponseDto createPost(User user, PostRequestDto postRequestDto) {
         Post post = new Post(postRequestDto);
@@ -31,6 +38,7 @@ public class PostService {
         return new PostResponseDto(post);
     }
 
+    // 게시글 수정
     @Transactional
     public PostResponseDto updatePost(User user, Long id, PostRequestDto postRequestDto) {
         Post post = findPost(id);
@@ -61,6 +69,4 @@ public class PostService {
                 new IllegalArgumentException("게시글이 존재하지 않습니다.")
         );
     }
-
-
 }
