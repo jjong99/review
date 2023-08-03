@@ -29,12 +29,12 @@ public class PostController {
     }
 
     @PostMapping("/posts")
-    PostResponseDto createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, PostRequestDto postRequestDto) {
+    PostResponseDto createPost(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody PostRequestDto postRequestDto) {
         return postService.createPost(userDetails.getUser(), postRequestDto);
     }
 
     @PutMapping("/posts/{id}")
-    PostResponseDto updatePost(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id, PostRequestDto postRequestDto) {
+    PostResponseDto updatePost(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id, @RequestBody PostRequestDto postRequestDto) {
         return postService.updatePost(userDetails.getUser(), id, postRequestDto);
     }
 
