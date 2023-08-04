@@ -7,10 +7,7 @@ import com.example.review.security.UserDetailsImpl;
 import com.example.review.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -23,6 +20,16 @@ public class CommentController {
     CommentResponseDto createComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody CommentRequestDto commentRequestDto) {
         return commentService.createComment(userDetails.getUser(), commentRequestDto);
 
+    }
+
+    @PutMapping("/comments/{id}")
+    CommentResponseDto updateComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id, @RequestBody CommentRequestDto commentRequestDto) {
+        return commentService.updateComment(userDetails.getUser(), id, commentRequestDto);
+    }
+
+    @DeleteMapping("/comments/{id}")
+    void deleteComment(@AuthenticationPrincipal UserDetailsImpl userDetails, @PathVariable Long id) {
+        commentService.deleteComment(userDetails.getUser(), id);
     }
 
 }

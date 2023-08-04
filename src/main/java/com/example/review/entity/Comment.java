@@ -12,8 +12,7 @@ public class Comment extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-
+    @Getter
     @Column(nullable = false)
     private String body;
 
@@ -30,7 +29,9 @@ public class Comment extends Timestamped {
         this.body = body;
     }
 
-
+    public void setBody(String body) {
+        this.body = body;
+    }
 
     public void setPost(Post post) {
         this.post = post;
